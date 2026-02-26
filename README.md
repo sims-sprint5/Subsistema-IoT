@@ -1,16 +1,48 @@
 # Subsistema-IoT
 
 ## Diagrama subsistema
+
 <img width="768" alt="Diagrama subsistema" src="https://github.com/user-attachments/assets/eb3e37a9-466c-4dad-a527-0e70f9f8780f" />
+
+---
+
+## Model de dades
+
+
+
+---
+
+## Funcionalitats del subsistema IoT
+
+Recollida de la posició dels vehicles.
+Habilitar / Deshabilitar sistema d'arranc del vehicle a través del actuador.
+
+---
+
 
 ## Actuador On / OFF
 
-En aquesta part del projecte tindrem un mòdul d'alimentació 
+En aquesta part del projecte tindrem un mòdul d'alimentació connectat a una pila que simularà la connexió amb la bateria del vehicle. Aquest mòdul alimentarà el sensor de Relé.
 
-En aquesta part del projecte tindrem una petita controladora conectada a la protoboard, utilitzarem una pila per donar energia a questa. La raspberry controlarà si la controladora està ON/OFF. Aquesta controladora haurà d'engegar un led per simular l'encesa del vehicle.
- Un cop tinguem aquesta part funcionant pasarem a utilitzar la controladora que es connectará amb el vehicle.
+La raspberry enviarà la senyal ON/OFF al relé.
 
-## Evolució
+Per simular el sistema d'arranc del vehicle connectarem un botó al relé i si passa la corrent el led s'engegarà.
+
+
+ ## Coses que necesitem demanar
+
+ - Sensor GPS
+ - Mòdul de Relé que soporte 10 A.
+
+
+ ## Sensor GPS
+
+ Ja que en una situació real, la SIM de les raspberry no es pot comunicar amb el nostre software al estar en xarxes diferents (Ja que el router de la companyia bloqueja aquestes comunicacions), utilitzarem cloudflare tunnel per a forçar aquestes comunicacions.
+
+
+## Evolució del projecte
+
+## Actuador
 
 Aquests son els components que utilitzarem per crear l'actuador:
 
@@ -31,18 +63,24 @@ Aquests son els components que utilitzarem per crear l'actuador:
 
 ---
 
- ## Sensor GPS
- Necesitem demanar el sensor GPS.
- Per enviar les dades del GPS utilitzarem cloudfare tunnel.
+## Sensor GPS
 
-  ## Evolució
-
- Fins ara hem utilitzar un sensor de temperatura per simular l'enviament de dades del GPS.
+Fins ara hem utilitzar un sensor de temperatura per simular l'enviament de dades del GPS.
  
 <img src="https://github.com/user-attachments/assets/dc28bb62-f148-4d9a-a74c-640afdca1672" width="350"> 
 <img src="https://github.com/user-attachments/assets/d7902d62-0028-465a-ac22-522c09b0bca3" width="500"> 
 
+---
 
-(+ Afegir imatge amb recepció de dades desde postman / mongoDB Atlas)
+Hem configurat un script a la raspberry per rebre les dades desde el sensor i enviar-les a la DB de MongoDB Atlas.
+
+Execució del script:
+
+<img src="https://github.com/user-attachments/assets/1def7280-dded-4a88-84c3-c8621debc21d" width="1024"> 
+
+
+Recepció dades a la BD MongoDB Atlas:
+
+<img src="https://github.com/user-attachments/assets/93cb58be-6d18-43a9-a4ea-e52b1e083a3c" width="1024"> 
 
 ---
