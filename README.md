@@ -11,8 +11,8 @@ En aquesta part del projecte tindrem una petita controladora conectada a la prot
  ## Evolució
 
  Fins ara hem utilitzar un sensor de temperatura per simular l'enviament de dades del GPS.
+ 
 <img src="https://github.com/user-attachments/assets/3ef347ec-c104-4722-9f17-8fb71cb88888" width="350">
-
 <img src="https://github.com/user-attachments/assets/d7902d62-0028-465a-ac22-522c09b0bca3" width="350">
 
 ( Imatge amb recepció de dades desde postman / mongoDB Atlas )
