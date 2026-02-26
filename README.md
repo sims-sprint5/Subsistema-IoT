@@ -47,21 +47,21 @@ Per simular el sistema d'arranc del vehicle connectarem un botó al relé i si p
 
 ## Evolució del projecte
 
-## Actuador
+### Actuador
 
 Aquests son els components que utilitzarem per crear l'actuador:
 
-### MÒDUL ALIMENTACIÓ MB102
+MÒDUL ALIMENTACIÓ MB102
 
 <img src="https://github.com/user-attachments/assets/230dba04-4675-479f-89ec-66644cacaff9" width="250">
 
 
-### CABLE PILA -> MÒDUL ALIMENTACIÓ
+CABLE PILA -> MÒDUL ALIMENTACIÓ
 
 <img src="https://github.com/user-attachments/assets/acb94a62-c9d6-43cb-913d-424f2243cb95" width="250">
 
 
-### RELÉ
+RELÉ
 
 <img src="https://github.com/user-attachments/assets/31478c03-d31c-4399-bbc1-37ff71c488ac" width="250">
 
