@@ -14,8 +14,8 @@
 
 ## Funcionalitats del subsistema IoT
 
-Recollida de la posició dels vehicles.
-Habilitar / Deshabilitar sistema d'arranc del vehicle a través del actuador.
+- Recollida de la posició dels vehicles.
+- Habilitar / Deshabilitar sistema d'arranc del vehicle a través del actuador.
 
 ---
 
@@ -28,16 +28,21 @@ La raspberry enviarà la senyal ON/OFF al relé.
 
 Per simular el sistema d'arranc del vehicle connectarem un botó al relé i si passa la corrent el led s'engegarà.
 
+---
 
  ## Coses que necesitem demanar
 
  - Sensor GPS
  - Mòdul de Relé que soporte 10 A.
 
+---
+
 
  ## Sensor GPS
 
  Ja que en una situació real, la SIM de les raspberry no es pot comunicar amb el nostre software al estar en xarxes diferents (Ja que el router de la companyia bloqueja aquestes comunicacions), utilitzarem cloudflare tunnel per a forçar aquestes comunicacions.
+
+---
 
 
 ## Evolució del projecte
