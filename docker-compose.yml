@@ -1,0 +1,10 @@
+services:
+  # ========== FastAPI ==========
+  api:
+    build: ./api
+    container_name: iot-api
+    ports:
+      - "8008:8000"
+    env_file:
+      - .env
+    restart: unless-stopped
