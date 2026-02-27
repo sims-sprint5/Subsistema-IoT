@@ -24,9 +24,8 @@ Registra la posició del GPS al llarg del temps.
 | latitud    | DECIMAL(10,7) | Latitud del dispositiu                   |
 | longitud   | DECIMAL(10,7) | Longitud del dispositiu                  |
 | data_hora  | DATETIME      | Moment de la lectura                     |
-| id_actuador| INT FK        | Opcional: referència a l’actuador       |
 
-### 2️⃣ Actuador (Opcional)
+### 2️⃣ Actuador
 
 Registra l’estat dels relés o altres actuadors.
 
