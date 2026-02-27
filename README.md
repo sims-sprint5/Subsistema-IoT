@@ -17,6 +17,11 @@
 - Recollida de la posició dels vehicles.
 - Habilitar / Deshabilitar sistema d'arranc del vehicle a través del actuador.
 
+ALTRES POSSIBLES FUNCIONALITATS
+
+- Recollida d'imatge amb càmera.
+- Detecció de proximitat amb sensor de proximitat.
+
 ---
 
 
@@ -73,9 +78,15 @@ RELÉ
 Fins ara hem utilitzar un sensor de temperatura per simular l'enviament de dades del GPS.
  
 <img src="https://github.com/user-attachments/assets/dc28bb62-f148-4d9a-a74c-640afdca1672" width="350"> 
-<img src="https://github.com/user-attachments/assets/d7902d62-0028-465a-ac22-522c09b0bca3" width="500"> 
 
 ---
+
+## Subsistema
+
+Hem dockeritzat el microservei i hem comprovat si respon correctament.
+<img src="https://github.com/user-attachments/assets/3ee63849-d0f6-4921-9e57-d05be67eefd8" width="1024"> 
+<img src="https://github.com/user-attachments/assets/8e4259bc-5dab-4086-b730-5df9d75ab67c" width="1024"> 
+
 
 Hem configurat un script a la raspberry per rebre les dades desde el sensor i enviar-les a la DB de MongoDB Atlas.
 
@@ -89,3 +100,8 @@ Recepció dades a la BD MongoDB Atlas:
 <img src="https://github.com/user-attachments/assets/93cb58be-6d18-43a9-a4ea-e52b1e083a3c" width="1024"> 
 
 ---
+
+## Següents pasos
+
+- Fer que el microservei envie aquestes dades al backend del software.
+- Crear una connexió entre la Raspberry i el Microservei amb Cloudflare Tunnel.
