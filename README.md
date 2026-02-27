@@ -2,7 +2,8 @@
 
 ## Diagrama subsistema
 
-<img width="768" alt="Diagrama subsistema" src="https://github.com/user-attachments/assets/eb3e37a9-466c-4dad-a527-0e70f9f8780f" />
+<img width="1403" height="632" alt="image" src="https://github.com/user-attachments/assets/f330616b-e0ee-4321-bbd2-e3339ab37bc5" />
+
 
 ---
 
