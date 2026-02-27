@@ -25,7 +25,7 @@ ALTRES POSSIBLES FUNCIONALITATS
 ---
 
 
-## Actuador On / OFF
+## Actuador ON/OFF
 
 En aquesta part del projecte tindrem un mòdul d'alimentació connectat a una pila que simularà la connexió amb la bateria del vehicle. Aquest mòdul alimentarà el sensor de Relé.
 
