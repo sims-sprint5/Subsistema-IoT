@@ -1,73 +1,73 @@
+# Model de Dades - Actuador i Sensor GPS (MongoDB)
 
-# Model de Dades - Actuador i Sensor GPS
+Aquest projecte recull dades d’un **sensor GPS** connectat a una Raspberry Pi i les envia mitjançant **Cloudflare Tunnel**. També permet controlar un **relé** que actua com a actuador.
 
-Aquest projecte recull dades d’un **sensor GPS** connectat a una Raspberry i les envia mitjançant **Cloudflare Tunnel**. També es pot controlar un **relé** com actuador.
+Inicialment el sistema s’ha provat amb un **sensor de temperatura**, i les dades es guarden a una base de dades **MongoDB**.
 
-## Components
+## Tecnologies utilitzades
+
+- Raspberry Pi
+- Sensor GPS
+- Relé (actuador)
+- Cloudflare Tunnel
+- MongoDB
+
+---
+
+# Components del Sistema
 
 - Mòdul d’alimentació MB102  
 - Cable pila → mòdul d’alimentació  
 - Relé  
 - Sensor GPS  
+- Raspberry Pi  
 - Cloudflare Tunnel  
+- Base de dades MongoDB  
 - Simulació inicial amb sensor de temperatura  
 
-## Taules del Model de Dades
+---
 
-### 1️⃣ Lectures GPS
+# Model de Dades (MongoDB)
 
-Registra la posició del GPS al llarg del temps.
+A MongoDB la informació s’organitza en **col·leccions** i **documents JSON**, en lloc de taules com en bases de dades SQL.
 
-| Camp        | Tipus          | Descripció                               |
-|------------|---------------|-----------------------------------------|
-| id_lectura | INT PK        | Clau primària auto_incremental          |
-| latitud    | DECIMAL(10,7) | Latitud del dispositiu                   |
-| longitud   | DECIMAL(10,7) | Longitud del dispositiu                  |
-| data_hora  | DATETIME      | Moment de la lectura                     |
+## 1️⃣ Col·lecció `lectures_gps`
 
-### 2️⃣ Actuador
+Registra la posició del dispositiu al llarg del temps.
 
-Registra l’estat dels relés o altres actuadors.
+### Exemple de document
 
-| Camp         | Tipus        | Descripció                     |
-|-------------|-------------|--------------------------------|
-| id_actuador | INT PK      | Clau primària                  |
-| tipus       | VARCHAR(50) | Tipus d’actuador (ex: relé)   |
-| estat       | TINYINT     | 0 = apagat, 1 = encès         |
-| data_hora   | DATETIME    | Moment de l’últim canvi       |
+```json
+{
+  "_id": ObjectId("65f2c8c4e3a4c2f1c5a1b123"),
+  "latitud": 41.387015,
+  "longitud": 2.170047,
+  "timestamp": "2026-02-26T16:41:21Z",
+  "actuador_id": ObjectId("65f2c8c4e3a4c2f1c5a1b999")
+}
+```
 
-## Relacions
+### Diagrama del Model (ASCII)
 
-- Un actuador pot tenir moltes lectures associades.  
-- Cada lectura pertany a un actuador (opcional si només es recullen GPS).  
+|     actuadors     |
+|-------------------|
+| _id               |
+| tipus             |
+| estat             |
+| timestamp         |
+       
+|   lectures_gps    |
+|-------------------|
+| _id               |
+| latitud           |
+| longitud          |
+| timestamp         |
+| actuador_id       |
 
-## Exemple de SQL MariaDB
-
-```sql
-CREATE TABLE actuador (
-    id_actuador INT AUTO_INCREMENT PRIMARY KEY,
-    tipus VARCHAR(50),
-    estat TINYINT,
-    data_hora DATETIME
-);
-
-CREATE TABLE lectura_gps (
-    id_lectura INT AUTO_INCREMENT PRIMARY KEY,
-    latitud DECIMAL(10,7) NOT NULL,
-    longitud DECIMAL(10,7) NOT NULL,
-    data_hora DATETIME NOT NULL,
-    id_actuador INT,
-    FOREIGN KEY (id_actuador) REFERENCES actuador(id_actuador)
-);
-
-## Diagrama ASCII del Model
-
-+-------------+                +-------------+
-|  Actuador   |----------------|  Lectura    |
-|-------------|                |    GPS      |
-| id_actuador |                | id_lectura  |
-| tipus       |                | latitud     |
-| estat       |                | longitud    |
-| data_hora   |                | data_hora   |
-+-------------+                | id_actuador |
-                               +-------------+
+|  lectures_sensor  |
+|-------------------|
+| _id               |
+| adc_value         |
+| voltage           |
+| temperature_c     |
+| timestamp         |
