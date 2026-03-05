@@ -20,6 +20,11 @@ Exemple:
 ```python
 SERVER_IP = "192.168.X.X"
 ```
+
+A mes haurem de afegir l'enllaç del MongoDB per a que es pugi conectar en la base de dade. En el nostre cas:
+```bash
+MONGO_URI=mongodb+srv://llorencmoreno_db_user:2a3cDbLH3QU35kMm@rasperry.qwwwbgw.mongodb.net/raspberry?retryWrites=true&w=majority
+```
 ## 3. Preparar l’entorn de Python
 
 Obrirem una terminal a la Raspberry Pi i navegarem fins a la carpeta on es troba l’script de Python que executarem.
