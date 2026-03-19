@@ -269,6 +269,46 @@ $response = $this->request()->delete('/api/laravel/temperatures', [
 
 ---
 
+## Actuador ON/OFF (GPIO)
+
+Estos endpoints permiten encender/apagar un actuador conectado a un pin GPIO (BCM).
+
+Importante:
+
+- Requieren `X-API-Key`.
+- Por seguridad, el actuador está deshabilitado por defecto. En el servidor donde corre la API, activa `ACTUATOR_ENABLED=1`.
+
+Endpoints:
+
+```
+GET  /api/actuator/
+POST /api/actuator/on
+POST /api/actuator/off
+```
+
+Ejemplo rápido en Laravel (con `Http`):
+
+```php
+use Illuminate\Support\Facades\Http;
+
+$baseUrl = config('services.iot_api.url');
+$apiKey = config('services.iot_api.key');
+
+// ON
+Http::baseUrl($baseUrl)
+    ->withHeaders(['X-API-Key' => $apiKey])
+    ->post('/api/actuator/on')
+    ->throw();
+
+// OFF
+Http::baseUrl($baseUrl)
+    ->withHeaders(['X-API-Key' => $apiKey])
+    ->post('/api/actuator/off')
+    ->throw();
+```
+
+---
+
 ## Health check
 
 ```
@@ -319,4 +359,9 @@ curl -H "X-API-Key: TU_API_KEY" "http://IP:8008/api/laravel/temperatures/latest"
 
 # Estadísticas
 curl -H "X-API-Key: TU_API_KEY" "http://IP:8008/api/laravel/temperatures/stats/summary"
+
+# Actuador (estado / ON / OFF)
+curl -H "X-API-Key: TU_API_KEY" "http://IP:8008/api/actuator/"
+curl -X POST -H "X-API-Key: TU_API_KEY" "http://IP:8008/api/actuator/on"
+curl -X POST -H "X-API-Key: TU_API_KEY" "http://IP:8008/api/actuator/off"
 ```

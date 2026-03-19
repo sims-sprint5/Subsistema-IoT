@@ -47,3 +47,26 @@ class MessageResponse(BaseModel):
     """Generic response with message."""
     message: str
     status: str = "ok"
+
+
+# ========== Actuator schemas ==========
+
+class ActuatorStatusResponse(BaseModel):
+    """Current actuator status and configuration."""
+
+    enabled: bool
+    available: bool
+    state: Optional[str] = Field(
+        default=None,
+        description="Current state: 'on' | 'off' | null (unknown/unavailable)",
+    )
+    gpio_pin: int = Field(..., description="BCM GPIO pin number")
+    active_high: bool = Field(
+        ..., description="True if GPIO HIGH means actuator ON (active-high)"
+    )
+
+
+class ActuatorCommandResponse(MessageResponse):
+    """Response for ON/OFF commands."""
+
+    state: str = Field(..., description="Resulting state: 'on' | 'off'")

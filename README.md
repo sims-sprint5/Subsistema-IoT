@@ -10,6 +10,33 @@ En aquesta part del projecte tindrem un mòdul d'alimentació
 En aquesta part del projecte tindrem una petita controladora conectada a la protoboard, utilitzarem una pila per donar energia a questa. La raspberry controlarà si la controladora està ON/OFF. Aquesta controladora haurà d'engegar un led per simular l'encesa del vehicle.
  Un cop tinguem aquesta part funcionant pasarem a utilitzar la controladora que es connectará amb el vehicle.
 
+### Control per GPIO (implementación)
+
+La API FastAPI incluye control ON/OFF por GPIO (BCM) en estos endpoints (protegidos con `X-API-Key`):
+
+- `GET  /api/actuator/` → estado
+- `POST /api/actuator/on` → ON
+- `POST /api/actuator/off` → OFF
+
+Por seguridad, el actuador está **deshabilitado por defecto**. Habilítalo con variables de entorno:
+
+```env
+ACTUATOR_ENABLED=1
+ACTUATOR_GPIO_PIN=24
+ACTUATOR_ACTIVE_HIGH=1
+```
+
+Notas de conexión (seguridad):
+
+- **LED (demo):** GPIO → resistencia (220–1kΩ) → ánodo LED; cátodo LED → GND.
+- **Relé:** usa un módulo con transistor/optocoplador. Muchos son *active-low* → pon `ACTUATOR_ACTIVE_HIGH=0`.
+- **Motor/solenoide:** nunca directo al GPIO; usa MOSFET/transistor + diodo flyback.
+
+Opcional (en la Raspberry): API Flask mínima para controlar el GPIO localmente.
+
+- Script: `raspberry/actuator_flask.py`
+- Endpoints: `GET /status`, `POST /on`, `POST /off`
+
 ## Evolució
 
 Aquests son els components que utilitzarem per crear l'actuador:

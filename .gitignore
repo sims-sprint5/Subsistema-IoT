@@ -1,5 +1,47 @@
+# ======== Secrets / local env ========
 .env
+.env.*
+
+# ======== Python caches / bytecode ========
 __pycache__/
-*.pyc
-mongo-data/
+*.py[cod]
+*$py.class
+
+# ======== Virtual environments ========
 .venv/
+venv/
+env/
+api/venv/
+api/.venv/
+raspberry/venv/
+raspberry/.venv/
+
+# ======== Test / typecheck / lint caches ========
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+coverage.xml
+htmlcov/
+
+# ======== Packaging / build ========
+build/
+dist/
+*.egg-info/
+
+# ======== Logs ========
+*.log
+
+# ======== Docker / data volumes ========
+mongo-data/
+
+# ======== OS / editor ========
+.DS_Store
+Thumbs.db
+.idea/
+
+# If you want to keep workspace settings, remove this line
+.vscode/
+
+# ======== Node (in case frontend is added) ========
+node_modules/
