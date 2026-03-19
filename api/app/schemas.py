@@ -3,19 +3,19 @@ from typing import Optional
 from datetime import datetime
 
 
-# ========== Schemas para recibir datos de la Raspberry ==========
+# ========== Schemas to receive data from the Raspberry ==========
 
 class TemperatureCreate(BaseModel):
-    """Datos que envía la Raspberry Pi."""
-    adc_value: int = Field(..., ge=0, le=255, description="Valor ADC (0-255)")
-    voltage: float = Field(..., ge=0, description="Voltaje calculado")
-    temperature_c: float = Field(..., description="Temperatura en Celsius")
+    """Data sent by the Raspberry Pi."""
+    adc_value: int = Field(..., ge=0, le=255, description="ADC Value (0-255)")
+    voltage: float = Field(..., ge=0, description="Calculated voltage")
+    temperature_c: float = Field(..., description="Temperature in Celsius")
 
 
-# ========== Schemas de respuesta ==========
+# ========== Response schemas ==========
 
 class TemperatureResponse(BaseModel):
-    """Respuesta con datos de temperatura."""
+    """Response with temperature data."""
     id: str = Field(..., alias="_id")
     adc_value: int
     voltage: float
@@ -27,7 +27,7 @@ class TemperatureResponse(BaseModel):
 
 
 class TemperatureListResponse(BaseModel):
-    """Respuesta con lista de temperaturas (para Laravel)."""
+    """Response with temperature list (for Laravel)."""
     total: int
     page: int
     per_page: int
@@ -35,7 +35,7 @@ class TemperatureListResponse(BaseModel):
 
 
 class StatsResponse(BaseModel):
-    """Estadísticas de temperatura (para Laravel)."""
+    """Temperature stats (for Laravel)."""
     count: int
     avg_temperature: Optional[float] = None
     min_temperature: Optional[float] = None
@@ -44,6 +44,6 @@ class StatsResponse(BaseModel):
 
 
 class MessageResponse(BaseModel):
-    """Respuesta genérica con mensaje."""
+    """Generic response with message."""
     message: str
     status: str = "ok"

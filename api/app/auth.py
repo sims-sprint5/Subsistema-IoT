@@ -1,6 +1,6 @@
 """
-Autenticación por API Key.
-Tanto la Raspberry como Laravel deben enviar el header: X-API-Key
+API Key Authentication.
+Both Raspberry and Laravel must send the header: X-API-Key
 """
 
 from fastapi import HTTPException, Security
@@ -11,10 +11,10 @@ api_key_header = APIKeyHeader(name="X-API-Key", auto_error=False)
 
 
 async def verify_api_key(api_key: str = Security(api_key_header)) -> str:
-    """Verifica que el API Key sea válido."""
+    """Verifies that the API Key is valid."""
     if not api_key or api_key != API_KEY:
         raise HTTPException(
             status_code=401,
-            detail="API Key inválida o no proporcionada",
+            detail="Invalid or missing API Key",
         )
     return api_key

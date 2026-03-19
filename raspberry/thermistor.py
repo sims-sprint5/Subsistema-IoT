@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 #############################################################################
-# Raspberry Pi - Sensor de Temperatura
-# Envía lecturas a FastAPI via HTTP
+# Raspberry Pi - Temperature Sensor
+# Sends readings to FastAPI via HTTP
 #############################################################################
 
 import time
@@ -9,17 +9,17 @@ import math
 import requests
 from ADCDevice import *
 
-# ======== CONFIG API =========
-# Cambiar por la IP/dominio donde corre el Docker con FastAPI
-API_URL = "http://192.168.1.100:8000/api/temperature/"
-API_KEY = "mi-api-key-secreta-cambiar-en-produccion"
+# ======== API CONFIG =========
+# Change for the IP/domain where Docker runs with FastAPI
+API_URL = "https://research-ash-between-roll.trycloudflare.com/api/temperature/"
+API_KEY = "my-secret-api-key-change-in-production"
 
-# Intervalo de envío en segundos
+# Sending interval in seconds
 SEND_INTERVAL = 2
 
-# ======== Buffer para envío por lotes (si falla la conexión) =========
+# ======== Buffer for batch sending (if connection fails) =========
 pending_readings = []
-MAX_BUFFER = 100  # máximo de lecturas acumuladas antes de descartar las más viejas
+MAX_BUFFER = 100  # maximum accumulated readings before discarding the oldest ones
 
 adc = ADCDevice()
 
@@ -36,7 +36,7 @@ def setup():
 
 
 def read_temperature():
-    """Lee el sensor y retorna los datos."""
+    """Reads the sensor and returns the data."""
     value = adc.analogRead(0)
     voltage = value / 255.0 * 3.3
     Rt = 10 * voltage / (3.3 - voltage)
@@ -51,7 +51,7 @@ def read_temperature():
 
 
 def send_to_api(data):
-    """Envía una lectura individual a la API."""
+    """Sends an individual reading to the API."""
     headers = {
         "Content-Type": "application/json",
         "X-API-Key": API_KEY,
@@ -62,7 +62,7 @@ def send_to_api(data):
 
 
 def send_bulk_to_api(readings):
-    """Envía múltiples lecturas acumuladas a la API."""
+    """Sends multiple accumulated readings to the API."""
     headers = {
         "Content-Type": "application/json",
         "X-API-Key": API_KEY,
@@ -79,30 +79,30 @@ def loop():
     while True:
         try:
             data = read_temperature()
-            print(f"Lectura: {data}")
+            print(f"Reading: {data}")
 
-            # Si hay lecturas pendientes, intentar enviarlas primero
+            # If there are pending readings, try to send them first
             if pending_readings:
                 try:
                     pending_readings.append(data)
                     result = send_bulk_to_api(pending_readings)
-                    print(f"Enviadas {len(pending_readings)} lecturas acumuladas: {result}")
+                    print(f"Sent {len(pending_readings)} accumulated readings: {result}")
                     pending_readings = []
                 except requests.exceptions.RequestException:
-                    print(f"Sin conexión. Acumuladas: {len(pending_readings)} lecturas")
+                    print(f"No connection. Accumulated {len(pending_readings)} readings")
                     if len(pending_readings) > MAX_BUFFER:
                         pending_readings = pending_readings[-MAX_BUFFER:]
             else:
-                # Envío normal individual
+                # Normal individual sending
                 try:
                     result = send_to_api(data)
-                    print(f"Enviado a API: {result}")
+                    print(f"Sent to API: {result}")
                 except requests.exceptions.RequestException as e:
-                    print(f"Error de conexión, acumulando lectura: {e}")
+                    print(f"Connection error, accumulating reading: {e}")
                     pending_readings.append(data)
 
         except Exception as e:
-            print(f"Error leyendo sensor: {e}")
+            print(f"Error reading sensor: {e}")
 
         time.sleep(SEND_INTERVAL)
 

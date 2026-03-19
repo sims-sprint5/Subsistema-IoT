@@ -49,10 +49,10 @@ def loop():
 
             collection.insert_one(data)
 
-            print("Enviado a Mongo:", data)
+            print("Sent to Mongo:", data)
 
         except Exception as e:
-            print("Error enviando a Mongo:", e)
+            print("Error sending to Mongo:", e)
 
         time.sleep(2)  #  envo cada 2 segundos
 

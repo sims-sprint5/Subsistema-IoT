@@ -1,7 +1,7 @@
 """
-FastAPI - Subsistema IoT
-API intermediaria entre Raspberry Pi y MongoDB.
-También expone endpoints para que Laravel consuma los datos.
+FastAPI - IoT Subsystem
+Intermediary API between Raspberry Pi and MongoDB.
+Also exposes endpoints for Laravel to consume the data.
 """
 
 from fastapi import FastAPI
@@ -14,7 +14,7 @@ from app.routes.laravel import router as laravel_router
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    """Manejar conexión a MongoDB al iniciar/cerrar la app."""
+    """Handle connection to MongoDB at app startup/shutdown."""
     await connect_to_mongo()
     yield
     await close_mongo_connection()
@@ -23,14 +23,14 @@ async def lifespan(app: FastAPI):
 app = FastAPI(
     title="Subsistema IoT API",
     description=(
-        "API para recibir datos de sensores desde Raspberry Pi, "
-        "almacenarlos en MongoDB y exponerlos a Laravel."
+        "API to receive sensor data from Raspberry Pi, "
+        "store it in MongoDB and expose it to Laravel."
     ),
     version="1.0.0",
     lifespan=lifespan,
 )
 
-# Registrar routers
+# Register routers
 app.include_router(temperature_router)
 app.include_router(laravel_router)
 
@@ -43,7 +43,7 @@ async def root():
 
 @app.get("/health", tags=["Health"])
 async def health_check():
-    """Health check detallado."""
+    """Detailed health check."""
     from app.database import get_database
 
     db = get_database()

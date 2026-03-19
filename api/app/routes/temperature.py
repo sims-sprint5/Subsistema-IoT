@@ -1,6 +1,6 @@
 """
-Rutas para recibir datos de la Raspberry Pi.
-La Raspberry envía lecturas de temperatura por HTTP POST.
+Routes to receive data from the Raspberry Pi.
+The Raspberry sends temperature readings via HTTP POST.
 """
 
 from fastapi import APIRouter, Depends, HTTPException
@@ -16,11 +16,11 @@ router = APIRouter(prefix="/api/temperature", tags=["Raspberry Pi"])
 @router.post("/", response_model=MessageResponse)
 async def create_temperature(data: TemperatureCreate, _: str = Depends(verify_api_key)):
     """
-    Recibe lectura de temperatura desde la Raspberry Pi y la guarda en MongoDB.
+    Receives temperature reading from the Raspberry Pi and saves it in MongoDB.
     """
     db = get_database()
     if db is None:
-        raise HTTPException(status_code=503, detail="Base de datos no disponible")
+        raise HTTPException(status_code=503, detail="Database not available")
 
     document = {
         "adc_value": data.adc_value,
@@ -32,7 +32,7 @@ async def create_temperature(data: TemperatureCreate, _: str = Depends(verify_ap
     result = await db["temperatura"].insert_one(document)
 
     return MessageResponse(
-        message=f"Lectura guardada con id: {str(result.inserted_id)}",
+        message=f"Reading saved with id: {str(result.inserted_id)}",
         status="ok",
     )
 
@@ -42,12 +42,12 @@ async def create_temperatures_bulk(
     readings: list[TemperatureCreate], _: str = Depends(verify_api_key)
 ):
     """
-    Recibe múltiples lecturas de temperatura (envío por lotes).
-    Útil si la Raspberry pierde conexión y acumula lecturas.
+    Receives multiple temperature readings (batch sending).
+    Useful if the Raspberry loses connection and accumulates readings.
     """
     db = get_database()
     if db is None:
-        raise HTTPException(status_code=503, detail="Base de datos no disponible")
+        raise HTTPException(status_code=503, detail="Database not available")
 
     documents = [
         {
@@ -62,6 +62,6 @@ async def create_temperatures_bulk(
     result = await db["temperatura"].insert_many(documents)
 
     return MessageResponse(
-        message=f"{len(result.inserted_ids)} lecturas guardadas",
+        message=f"{len(result.inserted_ids)} readings saved",
         status="ok",
     )

@@ -1,6 +1,6 @@
 """
-Rutas para que Laravel consuma datos de temperatura.
-Incluye listado paginado, filtros por fecha, estadísticas y última lectura.
+Routes for Laravel to consume temperature data.
+Includes paginated list, date filters, stats and latest reading.
 """
 
 from fastapi import APIRouter, Depends, HTTPException, Query
@@ -21,30 +21,30 @@ router = APIRouter(prefix="/api/laravel", tags=["Laravel"])
 
 
 def format_temperature(doc: dict) -> dict:
-    """Convierte documento de MongoDB a formato de respuesta."""
+    """Converts MongoDB document to response format."""
     doc["_id"] = str(doc["_id"])
     return doc
 
 
-# ==================== LISTADO PAGINADO ====================
+# ==================== PAGINATED LIST ====================
 
 @router.get("/temperatures", response_model=TemperatureListResponse)
 async def list_temperatures(
-    page: int = Query(1, ge=1, description="Número de página"),
-    per_page: int = Query(20, ge=1, le=100, description="Resultados por página"),
-    start_date: Optional[datetime] = Query(None, description="Fecha inicio (ISO 8601)"),
-    end_date: Optional[datetime] = Query(None, description="Fecha fin (ISO 8601)"),
+    page: int = Query(1, ge=1, description="Page number"),
+    per_page: int = Query(20, ge=1, le=100, description="Results per page"),
+    start_date: Optional[datetime] = Query(None, description="Start date (ISO 8601)"),
+    end_date: Optional[datetime] = Query(None, description="End date (ISO 8601)"),
     _: str = Depends(verify_api_key),
 ):
     """
-    Listado paginado de lecturas de temperatura.
-    Laravel puede filtrar por rango de fechas.
+    Paginated list of temperature readings.
+    Laravel can filter by date range.
     """
     db = get_database()
     if db is None:
-        raise HTTPException(status_code=503, detail="Base de datos no disponible")
+        raise HTTPException(status_code=503, detail="Database not available")
 
-    # Construir filtro
+    # Build filter
     query = {}
     if start_date or end_date:
         query["timestamp"] = {}
@@ -55,7 +55,7 @@ async def list_temperatures(
         if not query["timestamp"]:
             del query["timestamp"]
 
-    # Contar total
+    # Count total
     total = await db["temperatura"].count_documents(query)
 
     # Obtener página
@@ -80,11 +80,11 @@ async def list_temperatures(
     )
 
 
-# ==================== ÚLTIMA LECTURA ====================
+# ==================== LATEST READING ====================
 
 @router.get("/temperatures/latest", response_model=TemperatureResponse)
 async def get_latest_temperature(_: str = Depends(verify_api_key)):
-    """Obtiene la lectura de temperatura más reciente."""
+    """Gets the most recent temperature reading."""
     db = get_database()
     if db is None:
         raise HTTPException(status_code=503, detail="Base de datos no disponible")
@@ -92,18 +92,18 @@ async def get_latest_temperature(_: str = Depends(verify_api_key)):
     doc = await db["temperatura"].find_one(sort=[("timestamp", -1)])
 
     if not doc:
-        raise HTTPException(status_code=404, detail="No hay lecturas de temperatura")
+        raise HTTPException(status_code=404, detail="No temperature readings")
 
     return format_temperature(doc)
 
 
-# ==================== LECTURA POR ID ====================
+# ==================== READING BY ID ====================
 
 @router.get("/temperatures/{temperature_id}", response_model=TemperatureResponse)
 async def get_temperature_by_id(
     temperature_id: str, _: str = Depends(verify_api_key)
 ):
-    """Obtiene una lectura de temperatura por su ID."""
+    """Gets a temperature reading by its ID."""
     db = get_database()
     if db is None:
         raise HTTPException(status_code=503, detail="Base de datos no disponible")
@@ -111,31 +111,31 @@ async def get_temperature_by_id(
     try:
         doc = await db["temperatura"].find_one({"_id": ObjectId(temperature_id)})
     except Exception:
-        raise HTTPException(status_code=400, detail="ID inválido")
+        raise HTTPException(status_code=400, detail="Invalid ID")
 
     if not doc:
-        raise HTTPException(status_code=404, detail="Lectura no encontrada")
+        raise HTTPException(status_code=404, detail="Reading not found")
 
     return format_temperature(doc)
 
 
-# ==================== ESTADÍSTICAS ====================
+# ==================== STATS ====================
 
 @router.get("/temperatures/stats/summary", response_model=StatsResponse)
 async def get_temperature_stats(
-    start_date: Optional[datetime] = Query(None, description="Fecha inicio (ISO 8601)"),
-    end_date: Optional[datetime] = Query(None, description="Fecha fin (ISO 8601)"),
+    start_date: Optional[datetime] = Query(None, description="Start date (ISO 8601)"),
+    end_date: Optional[datetime] = Query(None, description="End date (ISO 8601)"),
     _: str = Depends(verify_api_key),
 ):
     """
-    Estadísticas de temperatura: promedio, mínimo, máximo, total.
-    Laravel puede usarlas para dashboards.
+    Temperature stats: average, minimum, maximum, total.
+    Laravel can use them for dashboards.
     """
     db = get_database()
     if db is None:
         raise HTTPException(status_code=503, detail="Base de datos no disponible")
 
-    # Filtro por fecha
+    # Date filter
     match_stage = {}
     if start_date or end_date:
         match_stage["timestamp"] = {}
@@ -167,7 +167,7 @@ async def get_temperature_stats(
 
     stats = result[0]
 
-    # Obtener última lectura
+    # Get latest reading
     last_doc = await db["temperatura"].find_one(sort=[("timestamp", -1)])
     last_reading = format_temperature(last_doc) if last_doc else None
 
@@ -180,15 +180,15 @@ async def get_temperature_stats(
     )
 
 
-# ==================== ELIMINAR LECTURAS ====================
+# ==================== DELETE READINGS ====================
 
 @router.delete("/temperatures", response_model=MessageResponse)
 async def delete_temperatures(
-    start_date: Optional[datetime] = Query(None, description="Fecha inicio"),
-    end_date: Optional[datetime] = Query(None, description="Fecha fin"),
+    start_date: Optional[datetime] = Query(None, description="Start date"),
+    end_date: Optional[datetime] = Query(None, description="End date"),
     _: str = Depends(verify_api_key),
 ):
-    """Eliminar lecturas de temperatura por rango de fechas."""
+    """Delete temperature readings by date range."""
     db = get_database()
     if db is None:
         raise HTTPException(status_code=503, detail="Base de datos no disponible")
@@ -204,11 +204,11 @@ async def delete_temperatures(
     if not query:
         raise HTTPException(
             status_code=400,
-            detail="Debes especificar al menos start_date o end_date para eliminar",
+            detail="You must specify at least start_date or end_date to delete",
         )
 
     result = await db["temperatura"].delete_many(query)
 
     return MessageResponse(
-        message=f"{result.deleted_count} lecturas eliminadas", status="ok"
+        message=f"{result.deleted_count} readings deleted", status="ok"
     )

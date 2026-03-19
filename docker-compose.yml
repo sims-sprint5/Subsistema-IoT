@@ -8,3 +8,12 @@ services:
     env_file:
       - .env
     restart: unless-stopped
+
+  # ======== Cloudflare Tunnel (Quick Tunnel) ========
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    container_name: iot-cloudflared
+    command: tunnel --url http://api:8000
+    depends_on:
+      - api
+    restart: unless-stopped

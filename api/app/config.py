@@ -5,7 +5,7 @@ load_dotenv()
 
 MONGO_URI = os.getenv("MONGO_URI", "mongodb+srv://localhost/raspberry")
 
-# Extraer nombre de DB del URI (último segmento del path antes de '?')
+# Extract DB name from URI (last segment of the path before '?')
 _db_from_uri = MONGO_URI.split("?")[0].rsplit("/", 1)[-1]
 MONGO_DB = _db_from_uri if _db_from_uri else "raspberry"
 
