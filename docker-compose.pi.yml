@@ -1,0 +1,10 @@
+# Raspberry Pi override: give the FastAPI container access to GPIO.
+# Usage (on Raspberry Pi):
+#   docker compose -f docker-compose.yml -f docker-compose.pi.yml up -d --build
+
+services:
+  api:
+    # Simplest option. Alternative is mapping only /dev/gpiomem.
+    privileged: true
+    devices:
+      - /dev/gpiomem:/dev/gpiomem

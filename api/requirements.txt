@@ -3,3 +3,6 @@ motor==3.6.*
 pymongo[srv]>=4.9,<4.10
 python-dotenv==1.1.*
 dnspython==2.7.*
+
+# GPIO support (only on Raspberry Pi / ARM). This keeps local dev on x86 working.
+RPi.GPIO==0.7.*; platform_machine == "armv7l" or platform_machine == "aarch64"

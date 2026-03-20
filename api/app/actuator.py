@@ -51,11 +51,12 @@ class ActuatorConfig:
     enabled: bool
     gpio_pin: int
     active_high: bool
+    simulate: bool
 
     @staticmethod
     def disabled_default() -> "ActuatorConfig":
         # Safe defaults. Pin is only informational when disabled.
-        return ActuatorConfig(enabled=False, gpio_pin=24, active_high=True)
+        return ActuatorConfig(enabled=False, gpio_pin=24, active_high=True, simulate=False)
 
     @staticmethod
     def from_env() -> "ActuatorConfig":
@@ -67,7 +68,13 @@ class ActuatorConfig:
             raise ValueError(f"Invalid ACTUATOR_GPIO_PIN={gpio_pin_raw!r}") from exc
 
         active_high = _parse_bool(os.getenv("ACTUATOR_ACTIVE_HIGH", "1"), default=True)
-        return ActuatorConfig(enabled=enabled, gpio_pin=gpio_pin, active_high=active_high)
+        simulate = _parse_bool(os.getenv("ACTUATOR_SIMULATE", "0"), default=False)
+        return ActuatorConfig(
+            enabled=enabled,
+            gpio_pin=gpio_pin,
+            active_high=active_high,
+            simulate=simulate,
+        )
 
 
 class ActuatorController:
@@ -92,12 +99,24 @@ class ActuatorController:
     def available(self) -> bool:
         return self._available
 
+    @property
+    def simulated(self) -> bool:
+        return self._config.simulate
+
     def startup(self) -> None:
         """Setup GPIO and ensure a safe initial OFF state."""
 
         if not self._config.enabled:
             self._available = False
             self._state = None
+            return
+
+        # Development mode: simulate without touching GPIO.
+        # Useful when running the API on a PC/WSL/Docker.
+        if self._config.simulate:
+            self._gpio = None
+            self._available = True
+            self._state = False
             return
 
         try:
@@ -155,6 +174,7 @@ class ActuatorController:
             "state": ("on" if self._state else "off") if self._state is not None else None,
             "gpio_pin": self._config.gpio_pin,
             "active_high": self._config.active_high,
+            "simulated": self.simulated,
         }
 
     def on(self) -> None:
@@ -172,6 +192,11 @@ class ActuatorController:
             raise ActuatorUnavailableError(
                 "Actuator disabled. Set ACTUATOR_ENABLED=1 to enable GPIO control."
             )
+
+        if self._config.simulate:
+            # Always available when simulating.
+            return
+
         if not self._gpio or not self._available:
             raise ActuatorUnavailableError(
                 "Actuator unavailable (GPIO library not present or no hardware access)."
@@ -185,6 +210,10 @@ class ActuatorController:
         return 0 if state_on else 1
 
     def _write_locked(self, state_on: bool) -> None:
+        if self._config.simulate:
+            self._state = state_on
+            return
+
         GPIO = self._gpio
         assert GPIO is not None
 

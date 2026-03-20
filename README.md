@@ -26,6 +26,26 @@ ACTUATOR_GPIO_PIN=24
 ACTUATOR_ACTIVE_HIGH=1
 ```
 
+Importante:
+
+- Si ejecutas la API en un PC/WSL o en Docker sin acceso a hardware, verás `available=false` y los comandos ON/OFF devolverán 503.
+- Para control real de GPIO, ejecuta la API en la Raspberry Pi.
+
+Modo desarrollo (PC/WSL):
+
+```env
+ACTUATOR_ENABLED=1
+ACTUATOR_SIMULATE=1
+```
+
+Con `ACTUATOR_SIMULATE=1`, la API simula el ON/OFF (sin tocar GPIO) y deja de responder 503.
+
+Docker en Raspberry Pi (con acceso a GPIO):
+
+```bash
+docker compose -f docker-compose.yml -f docker-compose.pi.yml up -d --build
+```
+
 Notas de conexión (seguridad):
 
 - **LED (demo):** GPIO → resistencia (220–1kΩ) → ánodo LED; cátodo LED → GND.
