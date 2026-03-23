@@ -35,6 +35,8 @@ import threading
 from dataclasses import dataclass
 from typing import Optional
 
+import json
+
 
 class ActuatorUnavailableError(RuntimeError):
     pass
@@ -52,11 +54,22 @@ class ActuatorConfig:
     gpio_pin: int
     active_high: bool
     simulate: bool
+    remote_url: Optional[str]
+    remote_timeout_s: float
+    remote_api_key: Optional[str]
 
     @staticmethod
     def disabled_default() -> "ActuatorConfig":
         # Safe defaults. Pin is only informational when disabled.
-        return ActuatorConfig(enabled=False, gpio_pin=24, active_high=True, simulate=False)
+        return ActuatorConfig(
+            enabled=False,
+            gpio_pin=24,
+            active_high=True,
+            simulate=False,
+            remote_url=None,
+            remote_timeout_s=2.5,
+            remote_api_key=None,
+        )
 
     @staticmethod
     def from_env() -> "ActuatorConfig":
@@ -69,11 +82,33 @@ class ActuatorConfig:
 
         active_high = _parse_bool(os.getenv("ACTUATOR_ACTIVE_HIGH", "1"), default=True)
         simulate = _parse_bool(os.getenv("ACTUATOR_SIMULATE", "0"), default=False)
+
+        remote_url = os.getenv("ACTUATOR_REMOTE_URL")
+        remote_url = remote_url.strip() if remote_url else None
+
+        remote_timeout_raw = os.getenv("ACTUATOR_REMOTE_TIMEOUT", "2.5")
+        try:
+            remote_timeout_s = float(remote_timeout_raw)
+        except ValueError as exc:
+            raise ValueError(
+                f"Invalid ACTUATOR_REMOTE_TIMEOUT={remote_timeout_raw!r} (must be float seconds)"
+            ) from exc
+
+        # Header key for remote actuator service.
+        # Defaults to the same API_KEY used by this API (convenient single secret).
+        remote_api_key = os.getenv("ACTUATOR_REMOTE_API_KEY")
+        if remote_api_key is None:
+            remote_api_key = os.getenv("API_KEY")
+        remote_api_key = remote_api_key.strip() if remote_api_key else None
+
         return ActuatorConfig(
             enabled=enabled,
             gpio_pin=gpio_pin,
             active_high=active_high,
             simulate=simulate,
+            remote_url=remote_url,
+            remote_timeout_s=remote_timeout_s,
+            remote_api_key=remote_api_key,
         )
 
 
@@ -84,6 +119,7 @@ class ActuatorController:
         self._config = config
         self._lock = threading.Lock()
         self._gpio = None  # late import of RPi.GPIO
+        self._remote = None  # late import of httpx.Client
         self._available = False
         self._state: Optional[bool] = None  # True=ON, False=OFF, None=unknown/unavailable
 
@@ -115,8 +151,34 @@ class ActuatorController:
         # Useful when running the API on a PC/WSL/Docker.
         if self._config.simulate:
             self._gpio = None
+            self._remote = None
             self._available = True
             self._state = False
+            return
+
+        # Remote mode: delegate ON/OFF to a Raspberry Pi HTTP endpoint.
+        # This allows running the API on a PC while the Pi toggles GPIO.
+        if self._config.remote_url:
+            try:
+                import httpx  # type: ignore
+
+                self._remote = httpx.Client(
+                    base_url=self._config.remote_url,
+                    timeout=self._config.remote_timeout_s,
+                    headers=self._remote_headers(),
+                )
+            except Exception:
+                self._remote = None
+                self._available = False
+                self._state = None
+                return
+
+            # Best-effort probe.
+            try:
+                self._remote_status_probe()
+            except Exception:
+                self._available = False
+                self._state = None
             return
 
         try:
@@ -149,6 +211,13 @@ class ActuatorController:
         request. Cleanup happens at process shutdown.
         """
 
+        if self._remote is not None:
+            try:
+                self._remote.close()
+            except Exception:
+                pass
+            self._remote = None
+
         if not self._gpio:
             return
 
@@ -168,6 +237,15 @@ class ActuatorController:
             self._state = None
 
     def status(self) -> dict:
+        # In remote mode, refresh status best-effort.
+        if self._remote is not None:
+            try:
+                self._remote_status_probe()
+            except Exception:
+                # Leave previous state; mark as unavailable.
+                self._available = False
+                self._state = None
+
         return {
             "enabled": self.enabled,
             "available": self.available,
@@ -175,6 +253,7 @@ class ActuatorController:
             "gpio_pin": self._config.gpio_pin,
             "active_high": self._config.active_high,
             "simulated": self.simulated,
+            "remote_url": self._config.remote_url,
         }
 
     def on(self) -> None:
@@ -197,6 +276,13 @@ class ActuatorController:
             # Always available when simulating.
             return
 
+        if self._remote is not None:
+            if not self._available:
+                raise ActuatorUnavailableError(
+                    "Actuator unavailable (remote endpoint not reachable)."
+                )
+            return
+
         if not self._gpio or not self._available:
             raise ActuatorUnavailableError(
                 "Actuator unavailable (GPIO library not present or no hardware access)."
@@ -214,12 +300,98 @@ class ActuatorController:
             self._state = state_on
             return
 
+        if self._remote is not None:
+            self._remote_set_state(state_on)
+            return
+
         GPIO = self._gpio
         assert GPIO is not None
 
         level = GPIO.HIGH if self._level_for(state_on) else GPIO.LOW
         GPIO.output(self._config.gpio_pin, level)
         self._state = state_on
+
+    def _remote_status_probe(self) -> None:
+        client = self._remote
+        if client is None:
+            return
+        resp = client.get("/status")
+        if resp.status_code >= 400:
+            raise ActuatorUnavailableError(
+                f"Remote actuator returned HTTP {resp.status_code}"
+            )
+
+        data = self._safe_json(resp.text)
+        state = data.get("state")
+        if isinstance(state, dict):
+            state = state.get("state")
+        if state == "on":
+            self._state = True
+        elif state == "off":
+            self._state = False
+        else:
+            self._state = None
+
+        self._available = True
+
+    def _remote_set_state(self, state_on: bool) -> None:
+        client = self._remote
+        if client is None:
+            raise ActuatorUnavailableError("Remote actuator client not initialized.")
+
+        # Preferred API (Node/Express spec): POST /actuator/on|off (auth via X-API-KEY)
+        endpoint = "/actuator/on" if state_on else "/actuator/off"
+        try:
+            resp = client.post(endpoint)
+        except Exception as exc:
+            self._available = False
+            self._state = None
+            raise ActuatorUnavailableError(f"Remote actuator request failed: {exc}") from exc
+
+        # Backwards-compatibility: older Flask version used POST /on|/off
+        if resp.status_code == 404:
+            legacy_endpoint = "/on" if state_on else "/off"
+            try:
+                resp = client.post(legacy_endpoint)
+            except Exception as exc:
+                self._available = False
+                self._state = None
+                raise ActuatorUnavailableError(f"Remote actuator request failed: {exc}") from exc
+
+        if resp.status_code >= 400:
+            self._available = False
+            self._state = None
+            raise ActuatorUnavailableError(
+                f"Remote actuator returned HTTP {resp.status_code}"
+            )
+
+        data = self._safe_json(resp.text)
+        state = data.get("state")
+        if state is None:
+            state = data.get("data", {}).get("state") if isinstance(data.get("data"), dict) else None
+        if state == "on":
+            self._state = True
+        elif state == "off":
+            self._state = False
+        else:
+            # Fallback to requested state.
+            self._state = state_on
+
+        self._available = True
+
+    @staticmethod
+    def _safe_json(text: str) -> dict:
+        try:
+            payload = json.loads(text)
+            return payload if isinstance(payload, dict) else {}
+        except Exception:
+            return {}
+
+    def _remote_headers(self) -> dict:
+        # Service requires X-API-KEY according to the user's spec.
+        if not self._config.remote_api_key:
+            return {}
+        return {"X-API-KEY": self._config.remote_api_key}
 
 
 # Singleton-style controller for the FastAPI app.

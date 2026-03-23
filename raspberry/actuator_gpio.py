@@ -18,8 +18,10 @@ Motor / inductive loads:
 - Use a MOSFET/transistor driver + flyback diode.
 
 Environment variables (optional):
-- ACTUATOR_GPIO_PIN (default 17)
-- ACTUATOR_ACTIVE_HIGH (default 1)
+- GPIO_PIN (default 24)
+- ACTIVE_LOW (default 0)
+- ACTUATOR_GPIO_PIN (legacy, default 24)
+- ACTUATOR_ACTIVE_HIGH (legacy, default 1)
 
 Example:
     from actuator_gpio import GPIOActuator
@@ -54,8 +56,17 @@ class GPIOActuator:
 
     @classmethod
     def from_env(cls) -> "GPIOActuator":
-        pin = int(os.getenv("ACTUATOR_GPIO_PIN", "24"))
-        active_high = _parse_bool(os.getenv("ACTUATOR_ACTIVE_HIGH", "1"), default=True)
+        # New env vars (preferred)
+        pin_raw = os.getenv("GPIO_PIN") or os.getenv("ACTUATOR_GPIO_PIN") or "24"
+        pin = int(pin_raw)
+
+        active_low_raw = os.getenv("ACTIVE_LOW")
+        if active_low_raw is not None:
+            active_low = _parse_bool(active_low_raw, default=False)
+            active_high = not active_low
+        else:
+            # Legacy env var
+            active_high = _parse_bool(os.getenv("ACTUATOR_ACTIVE_HIGH", "1"), default=True)
         return cls(pin=pin, active_high=active_high)
 
     def setup(self) -> None:
