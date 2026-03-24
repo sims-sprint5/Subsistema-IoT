@@ -10,3 +10,5 @@ _db_from_uri = MONGO_URI.split("?")[0].rsplit("/", 1)[-1]
 MONGO_DB = _db_from_uri if _db_from_uri else "raspberry"
 
 API_KEY = os.getenv("API_KEY", "mi-api-key-secreta-cambiar-en-produccion")
+LARAVEL_API_URL = os.getenv("LARAVEL_API_URL", "http://localhost:8000/api")
+LARAVEL_API_KEY = os.getenv("LARAVEL_API_KEY", "")
