@@ -65,6 +65,16 @@ class ActuatorStatusResponse(BaseModel):
         ..., description="True if GPIO HIGH means actuator ON (active-high)"
     )
 
+    simulated: Optional[bool] = Field(
+        default=None,
+        description="True if actuator is in simulation mode (no real GPIO/remote calls)",
+    )
+
+    remote_url: Optional[str] = Field(
+        default=None,
+        description="If set, actuator is delegated to this remote HTTP service",
+    )
+
 
 class ActuatorCommandResponse(MessageResponse):
     """Response for ON/OFF commands."""
