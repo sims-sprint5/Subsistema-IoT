@@ -31,13 +31,13 @@ def _get_controller(request: Request) -> ActuatorController:
 
 
 @router.get("/", response_model=ActuatorStatusResponse)
-async def actuator_status(request: Request, _: str = Depends(verify_api_key)):
+def actuator_status(request: Request, _: str = Depends(verify_api_key)):
     controller = _get_controller(request)
     return ActuatorStatusResponse(**controller.status())
 
 
 @router.post("/on", response_model=ActuatorCommandResponse)
-async def actuator_on(request: Request, _: str = Depends(verify_api_key)):
+def actuator_on(request: Request, _: str = Depends(verify_api_key)):
     controller = _get_controller(request)
     try:
         controller.on()
@@ -48,7 +48,7 @@ async def actuator_on(request: Request, _: str = Depends(verify_api_key)):
 
 
 @router.post("/off", response_model=ActuatorCommandResponse)
-async def actuator_off(request: Request, _: str = Depends(verify_api_key)):
+def actuator_off(request: Request, _: str = Depends(verify_api_key)):
     controller = _get_controller(request)
     try:
         controller.off()

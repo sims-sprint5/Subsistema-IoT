@@ -1,28 +1,4 @@
 #!/usr/bin/env python3
-"""Optional: simple Flask API to control the actuator ON/OFF on the Raspberry Pi.
-
-Run this on the Raspberry Pi (not inside the API Docker container) if you want a
-very lightweight HTTP interface to toggle a GPIO pin.
-
-SECURITY
---------
-If an API key is configured (env: IOT_API_KEY / ACTUATOR_REMOTE_API_KEY / API_KEY),
-ALL endpoints require header: X-API-KEY.
-
-Usage (on Raspberry Pi):
-    pip install -r raspberry/requirements.txt
-    IOT_API_KEY=supersecreta GPIO_PIN=24 ACTIVE_LOW=0 PORT=3000 python3 actuator_flask.py
-
-Endpoints (contract):
-    GET  /status
-    POST /actuator         Body: {"state":"on"|"off"}
-    POST /actuator/on
-    POST /actuator/off
-
-Legacy endpoints (kept for backwards compatibility):
-    POST /on
-    POST /off
-"""
 
 from __future__ import annotations
 

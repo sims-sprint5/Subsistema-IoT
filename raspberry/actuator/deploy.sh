@@ -7,7 +7,7 @@ SERVICE_NAME="actuator"
 
 if [[ -z "$TARGET" ]]; then
   echo "Usage: $0 user@host [remote_dir]"
-  echo "Example: $0 pi@192.168.226.139 /opt/actuator"
+  echo "Example: $0 pi@192.168.226.150 /opt/actuator"
   exit 2
 fi
 

@@ -1,37 +1,3 @@
-"""Minimal ON/OFF actuator control via Raspberry Pi GPIO.
-
-This is intended to run *on the Raspberry Pi*.
-
-WIRING / SAFETY
----------------
-LED demo (recommended first test):
-- Use a resistor (220–1kΩ).
-- GPIO (BCM pin) -> resistor -> LED anode (+)
-- LED cathode (-) -> GND
-
-Relay module:
-- Use a relay board with a driver transistor/optocoupler.
-- Many relay boards are "active LOW". Set active_high=False for those.
-
-Motor / inductive loads:
-- Never connect directly to GPIO.
-- Use a MOSFET/transistor driver + flyback diode.
-
-Environment variables (optional):
-- GPIO_PIN (default 24)
-- ACTIVE_LOW (default 0)
-- ACTUATOR_GPIO_PIN (legacy, default 24)
-- ACTUATOR_ACTIVE_HIGH (legacy, default 1)
-
-Example:
-    from actuator_gpio import GPIOActuator
-
-    a = GPIOActuator(pin=17, active_high=True)
-    a.setup()
-    a.on()
-    ...
-    a.cleanup()
-"""
 
 from __future__ import annotations
 

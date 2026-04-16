@@ -1,32 +1,3 @@
-"""GPIO ON/OFF actuator control (Raspberry Pi).
-
-This module is intentionally defensive:
-- If GPIO libraries aren't available (e.g. running in Docker on a laptop), it will
-  expose a "disabled/unavailable" actuator rather than crashing the API.
-- Default behavior is safe: actuator starts OFF and must be explicitly enabled
-  via env var.
-
-WIRING / SAFETY NOTES (read before connecting real loads)
---------------------------------------------------------
-1) LED (safe demo)
-   - Use a series resistor (220–1kΩ).
-   - GPIO -> resistor -> LED anode (+), LED cathode (-) -> GND.
-
-2) Relay module (typical 5V relay board)
-   - Do NOT power the relay coil directly from the GPIO.
-   - Use a relay module with a transistor/optocoupler driver.
-   - Many relay modules are "active LOW". Set ACTUATOR_ACTIVE_HIGH=0 if so.
-   - Power the relay module from 5V and GND, and connect IN to the chosen GPIO.
-
-3) Motor / inductive loads
-   - Never connect a motor directly to GPIO.
-   - Use a transistor/MOSFET driver and a flyback diode (for DC motors/solenoids).
-
-DISCLAIMER
-----------
-Always verify your module logic level, pinout, and load current requirements.
-A wrong wiring can permanently damage the Raspberry Pi.
-"""
 
 from __future__ import annotations
 
