@@ -18,7 +18,7 @@
 
 ```env
 IOT_API_URL=http://IP-DEL-SERVIDOR:8008
-IOT_API_KEY=mi-api-key-secreta-cambiar-en-produccion
+IOT_API_KEY=subsistemaequip2
 ```
 
 ### config/services.php

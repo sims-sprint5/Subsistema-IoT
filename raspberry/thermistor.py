@@ -11,11 +11,11 @@ from ADCDevice import *
 
 # ======== API CONFIG =========
 # Change for the IP/domain where Docker runs with FastAPI
-API_URL = "https://car-treasury-adware-modifications.trycloudflare.com"
-API_KEY = "my-secret-api-key-change-in-production"
+API_URL = "https://exit-wherever-prepaid-camping.trycloudflare.com"
+API_KEY = "subsistemaequip2"
 
 # Sending interval in seconds
-SEND_INTERVAL = 2
+SEND_INTERVAL = 10
 
 # ======== Buffer for batch sending (if connection fails) =========
 pending_readings = []
