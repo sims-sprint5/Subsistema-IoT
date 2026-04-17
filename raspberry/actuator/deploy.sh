@@ -9,7 +9,7 @@ DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 # ================================
 # CONFIGURACIÓ (Claus al mateix script)
 # ================================
-API_KEY_SECRETA="joelrubio06"
+API_KEY_SECRETA="subsistemaequip2"
 API_URL_DESTI="http://192.168.1.100:8008/api/temperature" # <- CANVIA AIXÒ A LA IP/URL DE LA TEVA API
 
 echo "==> 1. Verificant dependències (requirements.txt)..."
