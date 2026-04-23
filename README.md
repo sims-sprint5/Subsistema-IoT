@@ -5,19 +5,22 @@
 ### Raspberry
 
 Accedir als arxius del repositori clonat.
-
 - /Download/Subsistema-IoT/raspberry
 
 Crear entorn virtual.
-
 - python3 -m venv venv
 - source /venc/bin/activate
 
 Instal·lar dependències.
+- pip install -r requirements.txt
 
-pip install -r requirements.txt
+Executar deploy.sh, que executa l'script que envia les dades del thermistor i crea el webhook.
+- ./deploy.sh
 
-accedir a /actuator.
+Crear cloudflare tunnel
+- cloudflared tunnel --url http://127.0.0.1:3000
+
+Afegir aquest tunel al .env del subsistema.
 
 
 ## Diagrama subsistema

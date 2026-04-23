@@ -11,7 +11,7 @@ from ADCDevice import *
 
 # ======== API CONFIG =========
 # Change for the IP/domain where Docker runs with FastAPI
-API_URL = "https://exit-wherever-prepaid-camping.trycloudflare.com"
+API_URL = "https://divx-phrase-monroe-wagner.trycloudflare.com/api/temperature"
 API_KEY = "subsistemaequip2"
 
 # Sending interval in seconds

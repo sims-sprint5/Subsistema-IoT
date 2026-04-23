@@ -4,13 +4,14 @@ Intermediary API between Raspberry Pi and MongoDB.
 Also exposes endpoints for Laravel to consume the data.
 """
 
-from fastapi import FastAPI
+from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from contextlib import asynccontextmanager
 
 from app.database import connect_to_mongo, close_mongo_connection
 from app.routes.temperature import router as temperature_router
 from app.routes.laravel import router as laravel_router
 from app.routes.actuator import router as actuator_router
+from app.routes.websocket import router as ws_router
 from app.actuator import get_or_create_controller
 
 
@@ -48,6 +49,7 @@ app = FastAPI(
 app.include_router(temperature_router)
 app.include_router(laravel_router)
 app.include_router(actuator_router)
+app.include_router(ws_router)
 
 
 @app.get("/", tags=["Health"])
