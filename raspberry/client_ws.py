@@ -115,6 +115,8 @@ async def main():
         actuator.setup()
         
     url = API_WS_URL.replace("http://", "ws://").replace("https://", "wss://")
+    if "trycloudflare.com" in url and url.startswith("ws://"):
+        url = url.replace("ws://", "wss://")
     print(f"[{VEHICLE_ID}] Connecting to WebSocket {url}...")
     
     while True:

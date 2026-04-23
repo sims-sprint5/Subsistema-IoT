@@ -12,7 +12,6 @@ from app.routes.temperature import router as temperature_router
 from app.routes.laravel import router as laravel_router
 from app.routes.actuator import router as actuator_router
 from app.routes.websocket import router as ws_router
-from app.actuator import get_or_create_controller
 
 
 @asynccontextmanager
@@ -20,18 +19,9 @@ async def lifespan(app: FastAPI):
     """Handle connection to MongoDB at app startup/shutdown."""
     await connect_to_mongo()
 
-    # Optional GPIO actuator setup (safe: disabled by default).
-    controller = get_or_create_controller()
-    controller.startup()
-    app.state.actuator_controller = controller
-
     yield
 
     # Best-effort cleanup.
-    try:
-        controller.shutdown()
-    except Exception:
-        pass
     await close_mongo_connection()
 
 
