@@ -12,7 +12,11 @@ class ADCDevice(object):
     def __init__(self):
         self.cmd = 0
         self.address = 0
-        self.bus=smbus.SMBus(1)
+        try:
+            import smbus2 as smbus
+            self.bus = smbus.SMBus(1)
+        except Exception:
+            pass
         # print("ADCDevice init")
         
     def detectI2C(self,addr):
@@ -30,6 +34,7 @@ class ADCDevice(object):
 class PCF8591(ADCDevice):
     def __init__(self):
         super(PCF8591, self).__init__()
+        import smbus2 as smbus
         self.cmd = 0x40     # The default command for PCF8591 is 0x40.
         self.address = 0x48 # 0x48 is the default i2c address for PCF8591 Module.
         
@@ -44,6 +49,7 @@ class PCF8591(ADCDevice):
 class ADS7830(ADCDevice):
     def __init__(self):
         super(ADS7830, self).__init__()
+        import smbus2 as smbus
         self.cmd = 0x84
         self.address = 0x4b # 0x4b is the default i2c address for ADS7830 Module.   
         
