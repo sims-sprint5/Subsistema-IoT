@@ -12,7 +12,7 @@ DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 API_KEY_SECRETA="subsistemaequip2"
 
 echo "==> 1. Verificant dependències (requirements.txt)..."
-pip3 install -r "$DIR/requirements.txt" > /dev/null 2>&1 || echo "Avís: No s'ha pogut executar pip install. Assegura't de tenir les dependències."
+pip3 install -r "$DIR/raspberry/requirements.txt" > /dev/null 2>&1 || echo "Avís: No s'ha pogut executar pip install. Assegura't de tenir les dependències."
 
 echo "==> 2. Iniciant Client WebSocket (Sensor + Actuador)..."
 export IOT_API_KEY="$API_KEY_SECRETA"
@@ -21,7 +21,7 @@ export VEHICLE_ID="001"
 export GPIO_PIN=24
 export ACTIVE_LOW=0
 
-python3 "$DIR/client_ws.py" > "$DIR/client_ws.log" 2>&1 &
+python3 "$DIR/raspberry/client_ws.py" > "$DIR/raspberry/client_ws.log" 2>&1 &
 WS_PID=$!
 
 echo "=========================================================================="
