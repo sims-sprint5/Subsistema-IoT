@@ -1,5 +1,25 @@
 # Subsistema-IoT
 
+## Execució del subsistema
+
+### Raspberry
+
+Accedir als arxius del repositori clonat.
+
+- /Download/Subsistema-IoT/raspberry
+
+Crear entorn virtual.
+
+- python3 -m venv venv
+- source /venc/bin/activate
+
+Instal·lar dependències.
+
+pip install -r requirements.txt
+
+accedir a /actuator.
+
+
 ## Diagrama subsistema
 <img width="768" alt="Diagrama subsistema" src="https://github.com/user-attachments/assets/eb3e37a9-466c-4dad-a527-0e70f9f8780f" />
 
