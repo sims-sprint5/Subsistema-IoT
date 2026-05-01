@@ -10,8 +10,9 @@ pip3 install -r "$DIR/requirements.txt" > /dev/null 2>&1 || echo "Warning: Could
 
 echo "==> 2. Loading environment variables (.env)..."
 if [ -f "$DIR/.env" ]; then
+    sed -i 's/\r$//' "$DIR/.env"
     set -a
-    source "$DIR/.env"
+    . "$DIR/.env"
     set +a
 else
     echo "❌ Error: .env file not found. Rename .env.example to .env"
