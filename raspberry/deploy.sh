@@ -15,15 +15,9 @@ if [ -f "$DIR/.env" ]; then
     . "$DIR/.env"
     set +a
 else
-    echo "⚠️ Warning: .env file not found. Using default values."
+    echo "❌ Error: .env file not found. Make sure to create the .env file."
+    exit 1
 fi
-
-# Fallback values if environment variables are not set or .env file is missing
-export IOT_API_KEY="${IOT_API_KEY:-subsistemaequip2}"
-export API_WS_URL="${API_WS_URL:-wss://example.trycloudflare.com/ws/vehicle/001}"
-export VEHICLE_ID="${VEHICLE_ID:-001}"
-export GPIO_PIN="${GPIO_PIN:-24}"
-export ACTIVE_LOW="${ACTIVE_LOW:-0}"
 
 echo "==> 3. Starting IoT WebSocket Client (Sensor + Actuator)..."
 python3 "$DIR/client_ws.py" > "$DIR/client_ws.log" 2>&1 &
