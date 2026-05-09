@@ -121,7 +121,7 @@ async def main():
     
     while True:
         try:
-            async with websockets.connect(url, ping_interval=20, ping_timeout=20) as websocket:
+            async with websockets.connect(url, ping_interval=None) as websocket:
                 print(f"[{VEHICLE_ID}] Connected!")
                 
                 # Start two parallel tasks: one for sending data, one for receiving commands
