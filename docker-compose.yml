@@ -10,6 +10,8 @@ services:
     dns:
       - 8.8.8.8
       - 4.4.4.4
+    networks:
+      - sims_network
 
   # ======== Cloudflare Tunnel (Quick Tunnel) ========
   cloudflared:
@@ -19,3 +21,7 @@ services:
     depends_on:
       - api
     restart: unless-stopped
+
+networks:
+  sims_network:
+    external: true
