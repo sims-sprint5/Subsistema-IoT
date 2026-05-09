@@ -6,11 +6,17 @@ db = None
 
 
 async def connect_to_mongo():
-    """Connect to MongoDB at app startup."""
+    """Connect to MongoDB at app startup. Fails gracefully if URI is missing or invalid."""
     global client, db
-    client = AsyncIOMotorClient(MONGO_URI)
-    db = client[MONGO_DB]
-    print(f"Connected to MongoDB: {MONGO_DB}")
+    if not MONGO_URI:
+        print("WARNING: MONGO_URI not set — running without MongoDB (temperature storage disabled)")
+        return
+    try:
+        client = AsyncIOMotorClient(MONGO_URI)
+        db = client[MONGO_DB]
+        print(f"Connected to MongoDB: {MONGO_DB}")
+    except Exception as e:
+        print(f"WARNING: Could not initialise MongoDB client: {e} — running without MongoDB")
 
 
 async def close_mongo_connection():
