@@ -2,10 +2,17 @@
 
 ## Execució del subsistema
 
+Executar al directori del Microservei
+- docker compose down -v && docker compose up -d --build
+
+veure el fast tunnel
+- docker compose logs cloudflared | grep -i trycloudflare
+![alt text](image.png)
+
 ### Raspberry
 
 Accedir als arxius del repositori clonat.
-- /Download/Subsistema-IoT/raspberry
+- Subsistema-IoT/raspberry
 
 Crear entorn virtual.
 - python3 -m venv venv
@@ -14,11 +21,12 @@ Crear entorn virtual.
 Instal·lar dependències.
 - pip install -r requirements.txt
 
+Introdüir el nou tunnel a la variable del .env
+
 Executar deploy.sh, que executa l'script que envia les dades del thermistor i crea el webhook.
 - ./deploy.sh
 
-Crear cloudflare tunnel
-- cloudflared tunnel --url http://127.0.0.1:3000
+
 
 Afegir aquest tunel al .env del subsistema.
 
